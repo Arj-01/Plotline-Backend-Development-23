@@ -1,0 +1,11 @@
+{
+  "name": "backend-development-plotline",
+  "version": "1.0.0",
+  "description": "Task Completion for an internship at Plotline",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Arjit Giri",
+  "license": "ISC"
+}
