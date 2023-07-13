@@ -1,15 +1,16 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const app = express();
 const cookieParser = require('cookie-parser');
 const port = 8001;
+
+const app = express();
 
 
 // importing routes //
 const itemsRoutes = require('./routes/itemsRoutes.js');
 const usersRoutes = require('./routes/userRoutes.js');
-const productRoutes = require('./routes/productRoutes');
-const serviceRoutes = require('./routes/serviceRoutes');
+const productRoutes = require('./routes/productRoutes.js');
+const serviceRoutes = require('./routes/serviceRoutes.js');
 
 
 

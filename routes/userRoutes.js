@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
-const authenticateToken = require('../middleware/authentication.js');
+const {authenticateToken} = require('../middleware/authentication.js');
 
 
 
@@ -87,7 +87,7 @@ router.post('/login', async (req, res) => {
 router.get('/logout', authenticateToken, async (req,res) => {
 
     try{
-        console.log("logout-hitting");
+        // console.log("logout-hitting");
         const token = req.cookies.token;
         res.clearCookie('token');
         res.status(200).json({ message: 'User logged out successfully' });

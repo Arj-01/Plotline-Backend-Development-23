@@ -1,10 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const isAdmin = require('../middleware/authentication');
+const {isAdmin} = require('../middleware/authentication.js');
 const Product = require('../models/product');
 
 // Add a product will only be accessible by the admin
-router.post('/users/addProduct', isAdmin, async (req, res) => {
+router.post('/add', isAdmin, async (req, res) => {
   try {
     // Creating a new product
     const product = new Product({

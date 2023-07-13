@@ -38,6 +38,6 @@ function isAdmin(req, res, next) {
       req.user = user;
       next();
     });
-  }
+}
 
 module.exports = {authenticateToken, isAdmin};
