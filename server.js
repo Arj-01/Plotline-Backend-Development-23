@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const app = express();
+const cookieParser = require('cookie-parser');
 const port = 8001;
 
 
@@ -29,6 +30,7 @@ db.once("open", () => {
 
 // creating Middleware //
 app.use(express.json());
+app.use(cookieParser());
 
 
 
