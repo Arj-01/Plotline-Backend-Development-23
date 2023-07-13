@@ -4,6 +4,10 @@ const app = express();
 const port = 8001;
 
 
+// importing routes //
+const itemsRoutes = require('./routes/itemsRoutes.js');
+
+
 
 // connecting mongodb remotely with the current project in VS-CODE using string URL//
 const dbUrl = "mongodb+srv://aarjitgiri:billingservice@billingcluster.hwne6nc.mongodb.net/"; 
@@ -22,17 +26,16 @@ db.once("open", () => {
 
 
 
+// creating Middleware //
+app.use(express.json());
+
+
+
+// routes //
+app.use('/', itemsRoutes);
+
+
 // catalog page //
-app.get("/", (req, res) => {
-    res.status(200).json({
-        msg: "welcome to catalog page"
-    })
-    console.log("Welcone to the catalog page");
-});
-
-
-
-
 
 
 
