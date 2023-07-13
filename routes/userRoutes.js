@@ -15,6 +15,11 @@ const {authenticateToken} = require('../middleware/authentication.js');
 // admin password -> arjitgiri
 // isAdmin - > true
 
+
+// 1st user 
+// username -> xyzuser@gmail.com
+// password -> xyz
+
 router.post('/register', async (req, res) => {
   try {
 

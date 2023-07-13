@@ -11,6 +11,7 @@ const itemsRoutes = require('./routes/itemsRoutes.js');
 const usersRoutes = require('./routes/userRoutes.js');
 const productRoutes = require('./routes/productRoutes.js');
 const serviceRoutes = require('./routes/serviceRoutes.js');
+const cartRoutes = require('./routes/cartRoutes.js');
 
 
 
@@ -42,7 +43,14 @@ app.use('/', itemsRoutes);
 app.use('/users', usersRoutes);
 app.use('/products', productRoutes);
 app.use('/services', serviceRoutes);
+app.use('/carts', cartRoutes);
 
+
+app.all("*", (req, res, next) => {
+    res.status(401).json({
+        message: "Hitting Wrong End-Point"
+    })
+});
 
 
 // server listening at port 8001 //
