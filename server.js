@@ -22,6 +22,19 @@ db.once("open", () => {
 
 
 
+// catalog page //
+app.get("/", (req, res) => {
+    res.status(200).json({
+        msg: "welcome to catalog page"
+    })
+    console.log("Welcone to the catalog page");
+});
+
+
+
+
+
+
 
 // server listening at port 8001 //
 app.listen(port, () => {
