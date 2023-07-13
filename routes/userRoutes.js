@@ -15,7 +15,7 @@ const authenticateToken = require('../middleware/authentication.js');
 // admin password -> arjitgiri
 // isAdmin - > true
 
-router.post('/', async (req, res) => {
+router.post('/register', async (req, res) => {
   try {
 
     const { email, password, isAdmin } = req.body;

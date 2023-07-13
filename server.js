@@ -8,6 +8,8 @@ const port = 8001;
 // importing routes //
 const itemsRoutes = require('./routes/itemsRoutes.js');
 const usersRoutes = require('./routes/userRoutes.js');
+const productRoutes = require('./routes/productRoutes');
+const serviceRoutes = require('./routes/serviceRoutes');
 
 
 
@@ -37,6 +39,8 @@ app.use(cookieParser());
 // routes //
 app.use('/', itemsRoutes);
 app.use('/users', usersRoutes);
+app.use('/products', productRoutes);
+app.use('/services', serviceRoutes);
 
 
 
