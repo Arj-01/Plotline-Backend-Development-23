@@ -6,6 +6,7 @@ const port = 8001;
 
 // importing routes //
 const itemsRoutes = require('./routes/itemsRoutes.js');
+const usersRoutes = require('./routes/userRoutes.js');
 
 
 
@@ -33,10 +34,7 @@ app.use(express.json());
 
 // routes //
 app.use('/', itemsRoutes);
-
-
-
-// catalog page //
+app.use('/users', usersRoutes);
 
 
 
