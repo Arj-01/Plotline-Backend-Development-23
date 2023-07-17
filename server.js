@@ -12,6 +12,7 @@ const usersRoutes = require('./routes/userRoutes.js');
 const productRoutes = require('./routes/productRoutes.js');
 const serviceRoutes = require('./routes/serviceRoutes.js');
 const cartRoutes = require('./routes/cartRoutes.js');
+const orderRoutes = require('./routes/orderRoutes.js');
 
 
 
@@ -44,9 +45,10 @@ app.use('/users', usersRoutes);
 app.use('/products', productRoutes);
 app.use('/services', serviceRoutes);
 app.use('/carts', cartRoutes);
+app.use('/orders', orderRoutes);
 
 
-app.all("*", (req, res, next) => {
+app.all("*", (res) => {
     res.status(401).json({
         message: "Hitting Wrong End-Point"
     })
