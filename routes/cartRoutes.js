@@ -17,10 +17,10 @@ router.delete("/:type/:itemId", authenticateToken, CartControl.deleteFromCart);
 
 
 // Clearing the cart
-router.delete("/", authenticateToken, CartControl.cleartCart);
+router.delete("/", authenticateToken, CartControl.clearCart);
 
 
-// cart checkout 
+// cart checkout + generating bill
 router.post('/checkout', authenticateToken, CartControl.checkout);
 
 
