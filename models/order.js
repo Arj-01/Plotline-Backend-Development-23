@@ -30,4 +30,4 @@ const orderSchema = new mongoose.Schema({
     totalPrice: Number,
 });
 
-module.exports = mongoose.model('Order', cartSchema);
+module.exports = mongoose.model('Order', orderSchema);
