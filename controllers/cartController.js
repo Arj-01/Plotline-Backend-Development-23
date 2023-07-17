@@ -1,4 +1,4 @@
-const express = require("express");
+
 const {
   calculateProductTax,
   calculateServiceTax,
@@ -44,35 +44,57 @@ module.exports.addInCart = async (req, res) => {
         let price;
     
         if (type === "product") {
+
           item = await Product.findById(itemId);
-          //   console.log("3");
           tax = calculateProductTax(item.price, quantity);
-    
           price = item.price;
-          //   console.log("4");
           totalPrice = price * quantity + tax;
-    
-          cart.products.push({ item: itemId, quantity, price, totalPrice, tax });
+
+          // Checking if the product is already in the cart
+          const existingProductIndex = cart.products.findIndex((product) => product.item.toString() === itemId);
+
+          if (existingProductIndex !== -1) {
+
+            // Updating the existing product in the cart
+            cart.products[existingProductIndex].quantity += quantity;
+            cart.products[existingProductIndex].price += totalPrice;
+            cart.products[existingProductIndex].tax += tax;
+
+          } else {
+      
+            // adding a new product
+            cart.products.push({ item: itemId, quantity, price, totalPrice, tax });
+
+          }
     
         } else if (type === "service") {
     
           item = await Service.findById(itemId);
           tax = calculateServiceTax(item.price, quantity);
           price = item.price;
-    
           totalPrice = price * quantity + tax;
+
+          const existingServiceIndex = cart.services.findIndex((service) => service.item.toString() === itemId);
+
+          if (existingServiceIndex !== -1) {
+           
+            // updating existing service in the cart
+            cart.services[existingServiceIndex].quantity += quantity;
+            cart.services[existingServiceIndex].price += totalPrice;
+            cart.services[existingServiceIndex].tax += tax;
+
+          } else {
+            // Adding a new service to the cart
+            cart.services.push({ item: itemId, quantity, price, totalPrice, tax });
+          }
     
-          cart.services.push({ item: itemId, quantity, price, totalPrice, tax });
+          
         } else {
           return res.status(400).json({ message: "Invalid item type" });
         }
     
-        // console.log("1");
-    
         await cart.save();
-    
-        // console.log("2");
-    
+
         res.status(200).json({ message: "Item added to the cart", cart });
       } catch (error) {
         res.status(500).json({ message: "An error occurred", error });
@@ -153,63 +175,35 @@ module.exports.checkout  = async(req, res) => {
     let products = [];
     let services = [];
 
-    console.log("-2");
+    // console.log("-2");
 
-    // let totalBill = new TotalBill({ userId, products: [] , services: [], totalValue});
-
-    console.log("-1");
+    // console.log("-1");
 
 
     for (const item of items) {
 
       const {item: itemId, quantity, price, totalPrice, tax} = item;
 
-      console.log("1");
-
       if (item.item instanceof Product) {
-
-        // price = item.price;
-
-        console.log("11");
-
-        // tax = calculateProductTax(price, quantity);
-
-        console.log("111");
 
         products.push({item: itemId, quantity, price, totalPrice, tax });
 
-        console.log("2");
-
       } else if (item.item instanceof Service) {
 
-        // price = item.price;
-        // tax = calculateServiceTax(price, quantity);
+      
         services.push({ item: itemId, quantity, price, totalPrice, tax });
-
-        console.log("3");
 
       } else {
         continue;
       }
 
-      // item.price = price;
-      // item.tax = tax;
-
-      console.log("4");
-
       totalValue += totalPrice;
 
     }
 
-    // const totalBill = new TotalBill({ userId, items, totalValue });
-
     let totalBill = new TotalBill({ userId, products , services, totalValue});
 
-    console.log("5");
-
     await totalBill.save();
-
-    console.log("6");
 
     res.status(200).json({ message: 'Checkout successful', totalBill});
   } catch (error) {
@@ -225,17 +219,12 @@ module.exports.confirmOrder = async(req, res) => {
 
     const userId = req.user.userId;
 
-    console.log("1");
-
     const totalBill = await TotalBill.findOne({ userId });
-
-    console.log("2");
 
     if (!totalBill) {
       return res.status(404).json({ message: 'Total bill not found' });
     }
 
-    console.log("3");
 
     let products = totalBill.products;
     let services = totalBill.services;
@@ -245,19 +234,9 @@ module.exports.confirmOrder = async(req, res) => {
       return res.status(400).json({ message: 'Cart is empty' });
     }
 
-    console.log("4");
-
-    console.log(totalValue);
-
-    console.log("5");
-
     let order = new Order({ userId, products , services, totalPrice: totalValue});
 
-    console.log("6");
-
     await order.save();
-
-    console.log("7");
 
     // Clear the cart and total bill
     await Cart.findOneAndDelete({ userId });
