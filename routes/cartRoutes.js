@@ -189,7 +189,7 @@ router.post('/checkout', authenticateToken, async (req, res) => {
     }
 
     const totalBill = new TotalBill({ userId, items, totalValue });
-    
+
     await totalBill.save();
 
     res.status(200).json({ message: 'Checkout successful', totalBill});
@@ -198,6 +198,12 @@ router.post('/checkout', authenticateToken, async (req, res) => {
   }
 
 });
+
+
+
+// confirming an order
+
+
 
 
 module.exports = router;
