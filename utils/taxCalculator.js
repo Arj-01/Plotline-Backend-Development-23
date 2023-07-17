@@ -1,7 +1,7 @@
 
-function calculateProductTax(price) {
+function calculateProductTax(price, quantity) {
     
-    const tax = 200;
+    let tax = 200;
 
     if(price > 1000 && price <= 5000){
         tax = price * (0.12);
@@ -9,12 +9,12 @@ function calculateProductTax(price) {
         tax = price * (0.18);
     }
     
-    return tax;
+    return tax * quantity;
   }
   
-  function calculateServiceTax(price) {
+  function calculateServiceTax(price, quantity) {
 
-    const tax = 100;
+    let tax = 100;
     
     if(price > 1000 && price <= 8000){
         tax = price * (0.10);
@@ -22,7 +22,7 @@ function calculateProductTax(price) {
         tax = price * (0.15);
     }
     
-    return tax;
+    return tax * quantity;
   }
   
 module.exports = { calculateProductTax, calculateServiceTax };

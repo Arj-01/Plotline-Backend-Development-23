@@ -1,100 +1,103 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const {authenticateToken} = require('../middleware/authentication');
-const {calculateProductTax, calculateServiceTax } = require('../utils/taxCalculator.js');
-const Cart = require('../models/cart');
-
-
+const { authenticateToken } = require("../middleware/authentication");
+const {
+  calculateProductTax,
+  calculateServiceTax,
+} = require("../utils/taxCalculator.js");
+const Cart = require("../models/cart.js");
+const Product = require("../models/product.js");
+const Service = require("../models/service.js");
 
 // fetching the cart for the authenticated user
 
-router.get('/', authenticateToken, async (req, res) => {
-    try {
-      
-      const cart = await Cart.findOne({ userId: req.user.userId })
-        .populate('products.item')
-        .populate('services.item');
-  
-      res.status(200).json({ cart });
-    } catch (error) {
-      res.status(500).json({ message: 'An error occurred' });
-    }
+router.get("/", authenticateToken, async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ userId: req.user.userId })
+      .populate("products.item")
+      .populate("services.item");
+
+    res.status(200).json({ cart });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred" });
+  }
 });
 
 // Adding an item to the cart
-// testing 
+// testing
 
-router.post('/:type/:itemId', authenticateToken, async (req, res) => {
+router.post("/:type/:itemId", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
+    const { type, itemId } = req.params;
+    const { quantity } = req.body;
 
+    let cart = await Cart.findOne({ userId });
 
-    try {
+    if (!cart) {
+      // Create a new cart for the user if it doesn't exist
+      cart = new Cart({ userId, products: [], services: [] });
+    }
 
-        // console.log("hitting");
+    let item;
+    let tax;
+    let totalPrice;
+    let price;
 
-        const userId = req.user.userId;
-        const { type, itemId } = req.params;
-        const { quantity } = req.body;
-    
-        let cart = await Cart.findOne({ userId });
-    
-        if (!cart) {
-          // Creating a new cart for the user if it doesn't exist
-          cart = new Cart({ userId, products: [], services: [] });
-        }
-    
-        let item;
-        let tax;
-        let totalPrice;
-    
-        if (type === 'product') {
-          item = await Product.findById(itemId);
-          tax = calculateProductTax(item.price);
-          totalPrice = item.price * quantity + tax;
-    
-          cart.products.push({ item: itemId, quantity, tax });
-        } else if (type === 'service') {
-          item = await Service.findById(itemId);
-          tax = calculateServiceTax(item.price);
-          totalPrice = item.price * quantity + tax;
-    
-          cart.services.push({ item: itemId, quantity, tax });
-        } else {
-          return res.status(400).json({ message: 'Invalid item type' });
-        }
-    
-        await cart.save();
-    
-        res.status(200).json({ message: 'Item added to the cart', totalPrice, cart});
-      } catch (error) {
-        res.status(500).json({ message: 'An error occurred' });
-      }
-  
+    if (type === "product") {
+      item = await Product.findById(itemId);
+      //   console.log("3");
+      tax = calculateProductTax(item.price, quantity);
+
+      price = item.price;
+      //   console.log("4");
+      totalPrice = price * quantity + tax;
+
+      cart.products.push({ item: itemId, quantity, price, totalPrice, tax });
+
+    } else if (type === "service") {
+
+      item = await Service.findById(itemId);
+      tax = calculateServiceTax(item.price, quantity);
+      price = item.price;
+
+      totalPrice = price * quantity + tax;
+
+      cart.services.push({ item: itemId, quantity, price, totalPrice, tax });
+    } else {
+      return res.status(400).json({ message: "Invalid item type" });
+    }
+
+    // console.log("1");
+
+    await cart.save();
+
+    // console.log("2");
+
+    res.status(200).json({ message: "Item added to the cart", totalPrice });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred", error });
+  }
 });
+
+
+
 
 
 // Removing an item from the cart
-router.delete('/:type/:itemId', authenticateToken, async (req, res) => {
+router.delete("/:type/:itemId", authenticateToken, async (req, res) => {});
 
-    
-  
-});
+// Clearing the cart
+router.delete("/", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.userId;
 
+    await Cart.findOneAndDelete({ userId });
 
-
-// Clearing the cart 
-router.delete('/', authenticateToken, async (req, res) => {
-    try {
-        const userId = req.user.userId;
-    
-        await Cart.findOneAndDelete({ userId });
-    
-        res.status(200).json({ message: 'Cart cleared successfully' });
-      } 
-      catch (error) {
-
-        res.status(500).json({ message: 'An error occurred' });
-
-      }
+    res.status(200).json({ message: "Cart cleared successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred" });
+  }
 });
 
 module.exports = router;
