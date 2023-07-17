@@ -9,7 +9,7 @@ router.get("/", authenticateToken, CartControl.getCart);
 
 
 // Adding an item to the cart
-router.post("/:type/:itemId", authenticateToken, CartControl.addInCart);
+router.post("/:type/:itemId", authenticateToken, CartControl.addToCart);
 
 
 // Removing an item from the cart

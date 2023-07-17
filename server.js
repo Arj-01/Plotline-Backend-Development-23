@@ -48,8 +48,8 @@ app.use('/carts', cartRoutes);
 app.use('/orders', orderRoutes);
 
 
-app.all("*", (res) => {
-    res.status(401).json({
+app.all("*", (req, res) => {
+    return res.status(400).json({
         message: "Hitting Wrong End-Point"
     })
 });

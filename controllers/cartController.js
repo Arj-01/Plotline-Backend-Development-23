@@ -25,8 +25,9 @@ module.exports.getCart = async (req, res) => {
 
 
 
-module.exports.addInCart = async (req, res) => {
+module.exports.addToCart = async (req, res) => {
     try {
+
         const userId = req.user.userId;
         const { type, itemId } = req.params;
         const { quantity } = req.body;
@@ -37,7 +38,7 @@ module.exports.addInCart = async (req, res) => {
           // Create a new cart for the user if it doesn't exist
           cart = new Cart({ userId, products: [], services: [] });
         }
-    
+
         let item;
         let tax;
         let totalPrice;
@@ -57,13 +58,13 @@ module.exports.addInCart = async (req, res) => {
 
             // Updating the existing product in the cart
             cart.products[existingProductIndex].quantity += quantity;
-            cart.products[existingProductIndex].price += totalPrice;
+            cart.products[existingProductIndex].totalPrice += totalPrice;
             cart.products[existingProductIndex].tax += tax;
 
           } else {
-      
+
             // adding a new product
-            cart.products.push({ item: itemId, quantity, price, totalPrice, tax });
+            cart.products.push({ item: itemId, quantity, price, tax, totalPrice});
 
           }
     
@@ -80,12 +81,12 @@ module.exports.addInCart = async (req, res) => {
            
             // updating existing service in the cart
             cart.services[existingServiceIndex].quantity += quantity;
-            cart.services[existingServiceIndex].price += totalPrice;
+            cart.services[existingServiceIndex].totalPrice += totalPrice;
             cart.services[existingServiceIndex].tax += tax;
 
           } else {
             // Adding a new service to the cart
-            cart.services.push({ item: itemId, quantity, price, totalPrice, tax });
+            cart.services.push({ item: itemId, quantity, price, tax, totalPrice});
           }
     
           
@@ -144,6 +145,7 @@ module.exports.deleteFromCart = async (req, res) => {
 }
 
 
+
 module.exports.clearCart = async (req, res) => {
   try {
     const userId = req.user.userId;
@@ -155,6 +157,8 @@ module.exports.clearCart = async (req, res) => {
     res.status(500).json({ message: "An error occurred" });
   }
 }
+
+
 
 
 module.exports.checkout  = async(req, res) => {
@@ -170,28 +174,22 @@ module.exports.checkout  = async(req, res) => {
 
     const items = [...cart.products, ...cart.services];
 
-    let total = 0;
     let totalValue = 0;
     let products = [];
     let services = [];
 
-    // console.log("-2");
-
-    // console.log("-1");
-
-
     for (const item of items) {
 
-      const {item: itemId, quantity, price, totalPrice, tax} = item;
+      const {item: itemId, quantity, price, tax, totalPrice} = item;
 
       if (item.item instanceof Product) {
 
-        products.push({item: itemId, quantity, price, totalPrice, tax });
+        products.push({item: itemId, quantity, price, tax, totalPrice});
 
       } else if (item.item instanceof Service) {
 
       
-        services.push({ item: itemId, quantity, price, totalPrice, tax });
+        services.push({ item: itemId, quantity, price, tax, totalPrice});
 
       } else {
         continue;
@@ -225,7 +223,6 @@ module.exports.confirmOrder = async(req, res) => {
       return res.status(404).json({ message: 'Total bill not found' });
     }
 
-
     let products = totalBill.products;
     let services = totalBill.services;
     let totalValue = totalBill.totalValue;
@@ -238,7 +235,7 @@ module.exports.confirmOrder = async(req, res) => {
 
     await order.save();
 
-    // Clear the cart and total bill
+    // Clear the cart and total bill after confirming the order
     await Cart.findOneAndDelete({ userId });
     
     await TotalBill.findOneAndDelete({ userId });

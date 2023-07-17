@@ -11,8 +11,9 @@ const cartSchema = new mongoose.Schema({
         },
         quantity: Number,
         price : Number,
-        totalPrice : Number,
         tax: Number,
+        totalPrice : Number,
+        
       },
     ],
     services: [
@@ -23,8 +24,9 @@ const cartSchema = new mongoose.Schema({
         },
         quantity: Number,
         price : Number,
-        totalPrice : Number,
         tax: Number,
+        totalPrice : Number,
+        
       },
     ],
   });
