@@ -8,6 +8,7 @@ const {
 const Cart = require("../models/cart.js");
 const Product = require("../models/product.js");
 const Service = require("../models/service.js");
+const TotalBill = require("../models/totalBill.js");
 
 // fetching the cart for the authenticated user
 
@@ -144,9 +145,59 @@ router.delete("/", authenticateToken, async (req, res) => {
 
 
 
+
+
 // cart checkout 
 
+router.post('/checkout', authenticateToken, async (req, res) => {
+  
+  try {
+    
+    const userId = req.user.userId;
 
+    const cart = await Cart.findOne({ userId }).populate('products.item').populate('services.item');
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    const items = [...cart.products, ...cart.services];
+
+    let totalValue = 0;
+
+    for (const item of items) {
+
+      const { item: itemId, quantity } = item;
+
+      let price, tax;
+
+      if (item.item instanceof Product) {
+        price = item.item.price;
+        tax = calculateProductTax(price, quantity);
+      } else if (item.item instanceof Service) {
+        price = item.item.price;
+        tax = calculateServiceTax(price, quantity);
+      } else {
+        continue;
+      }
+
+      // item.price = price;
+      // item.tax = tax;
+
+      totalValue += price * quantity + tax;
+
+    }
+
+    const totalBill = new TotalBill({ userId, items, totalValue });
+    
+    await totalBill.save();
+
+    res.status(200).json({ message: 'Checkout successful', totalBill});
+  } catch (error) {
+    res.status(500).json({ message: 'An error occurred' });
+  }
+
+});
 
 
 module.exports = router;

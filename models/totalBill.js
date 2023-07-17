@@ -12,6 +12,7 @@ const totalBillSchema = new mongoose.Schema({
         },
         quantity: Number,
         price: Number,
+        totalPrice : Number,
         tax: Number,
       },
       {
@@ -21,6 +22,7 @@ const totalBillSchema = new mongoose.Schema({
         },
         quantity: Number,
         price: Number,
+        totalPrice : Number,
         tax: Number,
       },
     ],
