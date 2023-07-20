@@ -2,7 +2,15 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
+const crypto = require('crypto');
 
+
+const secret_key = process.env.MY_SECRET_KEY;
+const hashedSHA256key = crypto.createHash('sha256').update(secret_key).digest('hex');
+
+
+
+//
 
 module.exports.register = async(req, res) => {
 
@@ -58,7 +66,8 @@ module.exports.login = async(req, res) => {
         }
     
         // JWT token
-        const token = jwt.sign({ userId: user._id, isAdmin: user.isAdmin }, 'secret_key');
+        const token = jwt.sign({ userId: user._id, isAdmin: user.isAdmin }, hashedSHA256key);
+        
         res.cookie('token', token, { httpOnly: true, secure: true });
         res.status(200).json({ message: 'Login successful' });
       } 

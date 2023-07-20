@@ -1,9 +1,13 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const port = 8001;
+require('dotenv').config();
 
+
+const port = 8001;
 const app = express();
+
+
 
 
 // importing routes //
@@ -15,9 +19,11 @@ const cartRoutes = require('./routes/cartRoutes.js');
 const orderRoutes = require('./routes/orderRoutes.js');
 
 
-
 // connecting mongodb remotely with the current project in VS-CODE using string URL//
-const dbUrl = "mongodb+srv://aarjitgiri:billingservice@billingcluster.hwne6nc.mongodb.net/"; 
+
+
+
+const dbUrl = process.env.MY_DB_URL;
 
 mongoose.connect(dbUrl, {
     useNewUrlParser: true,

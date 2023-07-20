@@ -1,4 +1,10 @@
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+
+
+const secret_key = process.env.MY_SECRET_KEY;
+
+const hashedSHA256key = crypto.createHash('sha256').update(secret_key).digest('hex');
 
 
 // checking for authenticateToken ///
@@ -11,7 +17,7 @@ function authenticateToken(req, res, next) {
     return res.sendStatus(401);
   }
 
-  jwt.verify(token, 'secret_key', (err, user) => {
+  jwt.verify(token, hashedSHA256key, (err, user) => {
     if (err) {
       return res.sendStatus(403);
     }
@@ -31,7 +37,7 @@ function isAdmin(req, res, next) {
       return res.sendStatus(401);
     }
   
-    jwt.verify(token, 'secret_key', (err, user) => {
+    jwt.verify(token, hashedSHA256key, (err, user) => {
       if (err || !user.isAdmin) {
         return res.sendStatus(403);
       }
