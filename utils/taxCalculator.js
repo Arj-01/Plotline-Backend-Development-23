@@ -9,7 +9,9 @@ function calculateProductTax(price, quantity) {
         tax = price * (0.18);
     }
     
-    return tax * quantity;
+    let finalTax =  tax * quantity;
+    return parseFloat(finalTax.toFixed(2));
+
   }
   
   function calculateServiceTax(price, quantity) {
@@ -22,7 +24,8 @@ function calculateProductTax(price, quantity) {
         tax = price * (0.15);
     }
     
-    return tax * quantity;
+    let finalTax =  tax * quantity;
+    return parseFloat(finalTax.toFixed(2));
   }
   
 module.exports = { calculateProductTax, calculateServiceTax };

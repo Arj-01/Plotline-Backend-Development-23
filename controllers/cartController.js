@@ -32,6 +32,10 @@ module.exports.addToCart = async (req, res) => {
         const userId = req.user.userId;
         const { type, itemId } = req.params;
         const { quantity } = req.body;
+
+        if (!quantity || !Number.isInteger(quantity) || quantity <= 0) {
+          return res.status(400).json({ message: 'Invalid quantity. Quantity must be a positive number.' });
+        }
     
         let cart = await Cart.findOne({ userId });
     
@@ -200,6 +204,8 @@ module.exports.checkout  = async(req, res) => {
 
     }
 
+    totalValue = parseFloat(totalValue.toFixed(2));
+
     let totalBill = new TotalBill({ userId, products , services, totalValue});
 
     await totalBill.save();
@@ -221,7 +227,7 @@ module.exports.confirmOrder = async(req, res) => {
     const totalBill = await TotalBill.findOne({ userId });
 
     if (!totalBill) {
-      return res.status(404).json({ message: 'Total bill not found' });
+      return res.status(404).json({ message: 'Total bill not found. Maybe you need to checkout your cart first' });
     }
 
     let products = totalBill.products;
