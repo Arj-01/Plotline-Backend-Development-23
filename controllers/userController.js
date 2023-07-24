@@ -10,8 +10,6 @@ const { error } = require('console');
 const secret_key = process.env.MY_SECRET_KEY;
 const hashedSHA256key = crypto.createHash('sha256').update(secret_key).digest('hex');
 
-// , 'Invalid password format. Password must be at least 
-//    8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit.'
 
 module.exports.register = async(req, res) => {
 
@@ -31,42 +29,36 @@ module.exports.register = async(req, res) => {
         
         // can add many more functionalities
         await body('password').isLength({ min: 6}).withMessage('Invalid password address - must be atleast 6 characters long').run(req);
-
         // .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{8,}$/).run(req);
 
         const errors = validationResult(req);
 
-        // console.log("-x");
-
         if (!errors.isEmpty()) {
-          // If there are validation errors, build separate error messages for each field
-          const errorResponse = {};
+
+          // console.log(error)
+
+          const errorResponse = {};  // creating error object 
 
           errors.array().forEach(error => {
 
-            // console.log(error);
-
             if (error.path === 'email') {
-              // Error in the email field
-
-              // console.log("emialaaaa");
-
+          
               errorResponse.email = error.msg;
 
             } else if (error.path === 'password') {
-              // Error in the password field
-
-              // console.log("xpppassword");
-
+  
               errorResponse.password = error.msg;
+            } else {
+              // rest of the field - if exist in future
+              // maintainability
             }
-            // Add more conditions for other fields if needed
+           
           });
           return res.status(422).json(errorResponse);
 
         }
 
-        console.log("1");
+        // console.log("1");
 
         // checking if user is already registered by taking email is Primary-Key //
         const existingUser = await User.findOne({ email });
