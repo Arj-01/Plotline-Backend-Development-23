@@ -34,7 +34,7 @@ module.exports.addToCart = async (req, res) => {
         const { quantity } = req.body;
 
         if (!quantity || !Number.isInteger(quantity) || quantity <= 0) {
-          return res.status(400).json({ message: 'Invalid quantity. Quantity must be a positive number.' });
+          return res.status(400).json({ message: 'Invalid quantity. Quantity must be a positive whole number.' });
         }
     
         let cart = await Cart.findOne({ userId });

@@ -3,21 +3,71 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const crypto = require('crypto');
+const {body, validationResult} = require('express-validator');
+const { error } = require('console');
 
 
 const secret_key = process.env.MY_SECRET_KEY;
 const hashedSHA256key = crypto.createHash('sha256').update(secret_key).digest('hex');
 
-
-
-//
+// , 'Invalid password format. Password must be at least 
+//    8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit.'
 
 module.exports.register = async(req, res) => {
 
     try {
 
         const { email, password, isAdmin } = req.body;
-    
+
+        if(!email){
+          return res.status(400).json({ message: 'please provide email address - email address can not be empty' });
+        }
+
+        if(!password){
+          return res.status(400).json({ message: 'please provide password - password can not be empty' });
+        }
+
+        await body('email').isEmail().withMessage('Invalid email address - please provide correct email address').run(req);
+        
+        // can add many more functionalities
+        await body('password').isLength({ min: 6}).withMessage('Invalid password address - must be atleast 6 characters long').run(req);
+
+        // .matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[a-zA-Z0-9]{8,}$/).run(req);
+
+        const errors = validationResult(req);
+
+        // console.log("-x");
+
+        if (!errors.isEmpty()) {
+          // If there are validation errors, build separate error messages for each field
+          const errorResponse = {};
+
+          errors.array().forEach(error => {
+
+            // console.log(error);
+
+            if (error.path === 'email') {
+              // Error in the email field
+
+              // console.log("emialaaaa");
+
+              errorResponse.email = error.msg;
+
+            } else if (error.path === 'password') {
+              // Error in the password field
+
+              // console.log("xpppassword");
+
+              errorResponse.password = error.msg;
+            }
+            // Add more conditions for other fields if needed
+          });
+          return res.status(422).json(errorResponse);
+
+        }
+
+        console.log("1");
+
         // checking if user is already registered by taking email is Primary-Key //
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -28,6 +78,7 @@ module.exports.register = async(req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
     
         // Creating a new User with the given credentials //
+        // by default - not considering an Admin
         const user = new User({
           email,
           password: hashedPassword,
@@ -35,7 +86,6 @@ module.exports.register = async(req, res) => {
         });
     
         // Saving user to the database
-    
         await user.save();
     
         res.status(201).json({ message: 'User registered successfully!' });

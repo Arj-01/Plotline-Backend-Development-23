@@ -40,8 +40,10 @@ db.once("open", () => {
 
 
 // creating Middleware //
+
 app.use(express.json());
 app.use(cookieParser());
+
 
 
 
