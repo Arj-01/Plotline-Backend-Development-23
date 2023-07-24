@@ -39,7 +39,7 @@ function isAdmin(req, res, next) {
   
     jwt.verify(token, hashedSHA256key, (err, user) => {
       if (err || !user.isAdmin) {
-        return res.sendStatus(403);
+        return res.sendstatus(403);
       }
       req.user = user;
       next();
