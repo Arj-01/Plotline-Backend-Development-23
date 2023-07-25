@@ -1,5 +1,5 @@
 const Product = require("../models/product");
-const { isValidPrice } = require("../middleware/isValidPrice.js");
+const { isValidPrice } = require("../utils/isValidPrice.js");
 
 module.exports.addProduct = async (req, res) => {
   try {
